@@ -1,25 +1,53 @@
-<?php
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<div class="holder">
+<input type="text" id="inpt"/><br><br>
+   <select id="from">
+    <option value="USD">USD</option>
+    <option value="INR">INR</option>
+  </select>
+  <p>TO</p>
+   <select id="to">
+    
+    <option value="INR">INR</option>
+        <option value="USD">USD</option>
+    
+  </select>
+  <button>Convert</button><br>
+  <textarea id="output"></textarea>
+</div>
 
-function convertCurrency($amount,$from_currency,$to_currency){
-  $apikey = '441be14e3ba8f42fe331';
+<script>
+ 
+$('button').click(function() {
+  var inpt=document.getElementById("inpt").value;
+  var e = document.getElementById("from");
+  var e1 = document.getElementById("to");
+  var selectedFrom = e.options[e.selectedIndex].value;
+  var selectedTo = e1.options[e1.selectedIndex].value;
+  var outpt=document.getElementById("output");
+  var query = selectedFrom+"_"+selectedTo;
+  /* var api_url = 'https://free.currconv.com/api/v7/convert'
+  var key = '441be14e3ba8f42fe331' // not real
+ */
+    $.ajax({
+       url: '<?php echo Yii::$app->request->baseUrl.'/site/get-data' ?>',
+       type: 'get',
+        data: {
+                 amount: inpt , 
+                 from_currency:selectedFrom , 
+                to_currency: selectedTo , 
+             },
+       success: function (data) {
+           $('#output').val(data);
+       }
+  });
+});
+ 
+  
 
-  $from_Currency = urlencode($from_currency);
-  $to_Currency = urlencode($to_currency);
-  $query =  "{$from_Currency}_{$to_Currency}";
-
-  $json = file_get_contents("https://free.currconv.com/api/v7/convert?q={$query}&compact=ultra&apiKey={$apikey}");
-  $obj = json_decode($json, true);
-
-  $val = floatval($obj["$query"]);
-
-
-  $total = $val * $amount;
-  return number_format($total, 2, '.', '');
-}
-
-//uncomment to test
-echo convertCurrency(1, 'USD', 'INR');
 
 
 
-?>
+</script>
